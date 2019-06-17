@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyORM", "MyORM\MyORM.csproj", "{B49B13A0-CFC9-41A2-9E42-0565680F781D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.ObjectModule", "Framework.ObjectModule\Framework.ObjectModule.csproj", "{BA341EB4-2A54-4BFD-872E-60A7E61CBBBB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B49B13A0-CFC9-41A2-9E42-0565680F781D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B49B13A0-CFC9-41A2-9E42-0565680F781D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B49B13A0-CFC9-41A2-9E42-0565680F781D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B49B13A0-CFC9-41A2-9E42-0565680F781D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA341EB4-2A54-4BFD-872E-60A7E61CBBBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA341EB4-2A54-4BFD-872E-60A7E61CBBBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA341EB4-2A54-4BFD-872E-60A7E61CBBBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA341EB4-2A54-4BFD-872E-60A7E61CBBBB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A3E85C2E-960C-47C7-8A59-2199E7994F31}
+	EndGlobalSection
+EndGlobal
