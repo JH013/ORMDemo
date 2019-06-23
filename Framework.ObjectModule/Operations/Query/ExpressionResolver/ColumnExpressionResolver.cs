@@ -4,14 +4,16 @@ using System.Reflection;
 
 namespace Framework.ObjectModule
 {
-    public abstract class BaseExpressionResolver
+    public class ColumnExpressionResolver<T> : BaseExpressionResolver<T>
     {
-        public BaseExpressionResolver()
+        public ColumnExpressionResolver() : base()
         {
             this.SQL = string.Empty;
         }
 
-        public string SQL;
+        public override void Resolve(Expression expression)
+        {
+        }
 
         protected string GetColumns(Expression expression)
         {
@@ -31,7 +33,7 @@ namespace Framework.ObjectModule
             }
             else if (right.Body.NodeType == ExpressionType.Parameter)
             {
-                return string.Join(",", right.Body.Type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(f => $"[{f.Name}]").ToArray());
+                return string.Join(",", typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(f => $"[{f.Name}]").ToArray());
             }
             else
             {
@@ -40,7 +42,5 @@ namespace Framework.ObjectModule
 
             return string.Empty;
         }
-
-        public abstract void Resolve(Expression expression);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Framework.ObjectModule
 {
-    public class SelectExpressionResolver : BaseExpressionResolver
+    public class SelectExpressionResolver<T> : ColumnExpressionResolver<T>
     {
         public SelectExpressionResolver() : base()
         {

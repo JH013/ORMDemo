@@ -15,7 +15,6 @@ namespace Framework.ObjectModule
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
     }
 }

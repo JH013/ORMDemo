@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Framework.ObjectModule
 {
-    public class SqlProvider<T> : IQueryProvider
+    public class DbQueryProvider<T> : IQueryProvider
     {
         public IQueryable CreateQuery(Expression expression)
         {
@@ -28,13 +28,13 @@ namespace Framework.ObjectModule
         public TResult Execute<TResult>(Expression expression)
         {
             // Select表达式解析器
-            SelectExpressionResolver selectResolver = new SelectExpressionResolver();
+            SelectExpressionResolver<T> selectResolver = new SelectExpressionResolver<T>();
 
             // OrderBy表达式解析器
-            OrderByExpressionResolver orderByResolver = new OrderByExpressionResolver();
+            OrderByExpressionResolver<T> orderByResolver = new OrderByExpressionResolver<T>();
 
             // GroupBy表达式解析器
-            GroupByExpressionResolver groupByResolver = new GroupByExpressionResolver();
+            GroupByExpressionResolver<T> groupByResolver = new GroupByExpressionResolver<T>();
 
             // Where表达式解析器
             WhereExpressionResolver<T> whereResolver = new WhereExpressionResolver<T>();
@@ -72,6 +72,7 @@ namespace Framework.ObjectModule
             string sql = $"SELECT {selectResolver.SQL} FROM {typeof(T).Name} WHERE {whereResolver.SQL} {groupByResolver.SQL} {orderByResolver.SQL}";
             var data = DatabaseOperator.ExecuteReader<T>(DatabaseOperator.connection, sql, whereResolver.SqlParameters);
 
+            // 处理Select语句返回匿名对象
             if (selectResolver.Expression != null)
             {
                 var selctQuery = data.AsQueryable().Provider.CreateQuery(

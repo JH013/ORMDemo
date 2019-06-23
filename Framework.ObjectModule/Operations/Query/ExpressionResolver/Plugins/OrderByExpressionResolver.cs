@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Framework.ObjectModule
 {
-    public class OrderByExpressionResolver : BaseExpressionResolver
+    public class OrderByExpressionResolver<T> : BaseExpressionResolver<T>
     {
         public OrderByExpressionResolver() : base()
         {

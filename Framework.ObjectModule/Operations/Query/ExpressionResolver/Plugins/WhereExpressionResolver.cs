@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Framework.ObjectModule
 {
-    public class WhereExpressionResolver<T> : BaseExpressionResolver
+    public class WhereExpressionResolver<T> : BaseExpressionResolver<T>
     {
         public WhereExpressionResolver() : base()
         {

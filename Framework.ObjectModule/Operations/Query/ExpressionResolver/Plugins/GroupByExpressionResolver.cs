@@ -2,7 +2,7 @@
 
 namespace Framework.ObjectModule
 {
-    public class GroupByExpressionResolver : BaseExpressionResolver
+    public class GroupByExpressionResolver<T> : ColumnExpressionResolver<T>
     {
         public GroupByExpressionResolver() : base()
         {

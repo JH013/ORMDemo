@@ -11,6 +11,19 @@ namespace Framework.ObjectModule
     {
         public static string connection = @"Data Source=.; Initial Catalog=TestEF; User Id=sa; Password=1qaz2wsxE;";
 
+        public static int ExecuteNonQuery(string connectionStr, string sqlText, params SqlParameter[] parameters)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionStr))
+            {
+                conn.Open();
+                using (SqlCommand command = new SqlCommand(sqlText, conn))
+                {
+                    command.Parameters.AddRange(parameters);
+                    return command.ExecuteNonQuery();
+                }
+            }
+        }
+
         public static List<T> ExecuteReader<T>(string connectionStr, string sqlText)
         {
             using (SqlConnection conn = new SqlConnection(connectionStr))
