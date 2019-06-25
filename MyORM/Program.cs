@@ -54,9 +54,11 @@ namespace MyORM
         {
             using (var context = new SchoolContext())
             {
-                context.Students2.Add(new Student { Id = "234", Age = 22, Name = "name33" });
+                context.Students2.Add(new Student { Id = Guid.NewGuid().ToString(), Age = 21, Name = "name21" });
+                context.Students2.Add(new Student { Id = Guid.NewGuid().ToString(), Age = 12, Name = "name12" });
 
-                //context.Students2.add
+
+                context.Merge();
             }
         }
     }

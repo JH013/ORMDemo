@@ -59,6 +59,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Attributes\ColumnAttribute.cs" />
+    <Compile Include="Core\Attributes\DataTypeAttribute.cs" />
+    <Compile Include="Core\Attributes\StringLengthAttribute.cs" />
+    <Compile Include="Core\Attributes\TableAttribute.cs" />
     <Compile Include="DbOperate\DatabaseOperator.cs" />
     <Compile Include="Core\DbContextBase.cs" />
     <Compile Include="Operations\Insert\DbInsertProvider.cs" />

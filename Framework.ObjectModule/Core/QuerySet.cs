@@ -17,6 +17,7 @@ namespace Framework.ObjectModule
             this._provider = new DbQueryProvider<T>();
 
             this._tempDatas = new List<T>();
+            this._realType = typeof(T);
         }
 
         public QuerySet(Expression expression, IQueryProvider provider)
@@ -35,8 +36,11 @@ namespace Framework.ObjectModule
         private Expression _expression;
         private IQueryProvider _provider;
 
-        // 临时数据，用户Insert
+        // 临时数据，Insert操作使用
         private List<T> _tempDatas;
+
+        // 真实数据类型，Inset操作使用
+        private Type _realType;
 
         #endregion
 
@@ -130,18 +134,6 @@ namespace Framework.ObjectModule
         #endregion
 
         #region Public Method
-
-        public void Merge()
-        {
-            if (this._tempDatas.Any())
-            {
-                if(this._tempDatas.Count == 1)
-                {
-                    var data = this._tempDatas.First();
-
-                }
-            }
-        }
 
         #endregion
     }

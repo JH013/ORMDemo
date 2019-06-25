@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,5 +72,16 @@ namespace Framework.ObjectModule
         //    }
         //    return result;
         //}
+
+        public static T Attr<T>(this PropertyInfo propertyInfo)
+        {
+            var attrObj = propertyInfo.GetCustomAttributes(typeof(T), true).FirstOrDefault();
+            if (attrObj != null)
+            {
+                return (T)attrObj;
+            }
+
+            return default(T);
+        }
     }
 }
