@@ -96,7 +96,7 @@ namespace Framework.ObjectModule
 
             while (rdr.Read())
             {
-                T t = System.Activator.CreateInstance<T>();
+                T t = Activator.CreateInstance<T>();
                 Type obj = t.GetType();
                 for (int i = 0; i < rdr.FieldCount; i++)
                 {

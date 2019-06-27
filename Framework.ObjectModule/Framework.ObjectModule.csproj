@@ -65,16 +65,17 @@
     <Compile Include="Core\Attributes\TableAttribute.cs" />
     <Compile Include="DbOperate\DatabaseOperator.cs" />
     <Compile Include="Core\DbContextBase.cs" />
-    <Compile Include="Operations\Insert\DbInsertProvider.cs" />
-    <Compile Include="Operations\Query\ExpressionResolver\BaseExpressionResolver.cs" />
-    <Compile Include="Operations\Query\ExpressionResolver\ColumnExpressionResolver.cs" />
-    <Compile Include="Operations\Query\ExpressionResolver\Plugins\GroupByExpressionResolver.cs" />
-    <Compile Include="Operations\Query\ExpressionResolver\Plugins\OrderByExpressionResolver.cs" />
-    <Compile Include="Operations\Query\ExpressionResolver\Plugins\SelectExpressionResolver.cs" />
-    <Compile Include="Operations\Query\ExpressionResolver\Plugins\WhereExpressionResolver.cs" />
+    <Compile Include="Operations\DbDeleteProvider.cs" />
+    <Compile Include="Operations\DbInsertProvider.cs" />
+    <Compile Include="ExpressionResolver\BaseExpressionResolver.cs" />
+    <Compile Include="ExpressionResolver\Plugins\GroupByExpressionResolver.cs" />
+    <Compile Include="ExpressionResolver\Plugins\OrderByExpressionResolver.cs" />
+    <Compile Include="ExpressionResolver\Plugins\SelectExpressionResolver.cs" />
+    <Compile Include="ExpressionResolver\Plugins\WhereExpressionResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QuerySet.cs" />
-    <Compile Include="Operations\Query\DbQueryProvider.cs" />
+    <Compile Include="Operations\DbQueryProvider.cs" />
+    <Compile Include="Util\AttributeExtendUtil.cs" />
     <Compile Include="Util\Util.cs" />
   </ItemGroup>
   <ItemGroup>

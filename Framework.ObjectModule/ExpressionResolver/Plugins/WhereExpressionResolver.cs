@@ -123,7 +123,7 @@ namespace Framework.ObjectModule
 
         private string ResolveToFunc(BinaryExpression expression)
         {
-            string key = (expression.Left as MemberExpression).Member.Name;
+            string key = (expression.Left as MemberExpression).Member.ColumnName();
             string oper = this.GetOperator(expression.NodeType);
             object value = this.GetValue(expression.Right);
             var param = this.GetParamName(key, value);

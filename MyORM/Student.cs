@@ -4,7 +4,7 @@ using System.Data;
 namespace MyORM
 {
     [Table("Student")]
-    public class Student
+    public class Student22
     {
         [Column("Id")]
         [StringLength(128)]
@@ -16,6 +16,7 @@ namespace MyORM
         [DataType(SqlDbType.NChar)]
         public string Name { get; set; }
 
-        public int Age { get; set; }
+        [Column("Age")]
+        public int Age1 { get; set; }
     }
 }

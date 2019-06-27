@@ -72,16 +72,5 @@ namespace Framework.ObjectModule
         //    }
         //    return result;
         //}
-
-        public static T Attr<T>(this PropertyInfo propertyInfo)
-        {
-            var attrObj = propertyInfo.GetCustomAttributes(typeof(T), true).FirstOrDefault();
-            if (attrObj != null)
-            {
-                return (T)attrObj;
-            }
-
-            return default(T);
-        }
     }
 }

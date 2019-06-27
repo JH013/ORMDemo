@@ -6,17 +6,18 @@ using System.Linq.Expressions;
 
 namespace Framework.ObjectModule
 {
-    public class QuerySet<T> : IQueryable<T>, IOrderedQueryable<T>, IList<T>
+    public partial class QuerySet<T> : IQueryable<T>, IOrderedQueryable<T>
     {
 
-        #region Construction
+        #region 构造方法
 
         public QuerySet()
         {
             this._expression = Expression.Constant(this);
             this._provider = new DbQueryProvider<T>();
 
-            this._tempDatas = new List<T>();
+            this._tempDatas_Insert = new List<T>();
+            this._tempDatas_Remove = new List<IQueryable<T>>();
             this._realType = typeof(T);
         }
 
@@ -25,23 +26,27 @@ namespace Framework.ObjectModule
             this._expression = expression;
             this._provider = provider;
 
-            this._tempDatas = new List<T>();
+            this._tempDatas_Insert = new List<T>();
+            this._tempDatas_Remove = new List<IQueryable<T>>();
+            this._realType = typeof(T);
         }
 
         #endregion
 
-        #region Private Field
+        #region 私有字段
 
         // Linq Expression
         private Expression _expression;
         private IQueryProvider _provider;
 
-        // 临时数据，Insert操作使用
-        private List<T> _tempDatas;
+        // 临时数据，插入操作使用
+        private List<T> _tempDatas_Insert;
 
-        // 真实数据类型，Inset操作使用
+        // 临时数据，删除操作使用
+        private List<IQueryable<T>> _tempDatas_Remove;
+
+        // 真实数据类型，插入、删除操作使用
         private Type _realType;
-
         #endregion
 
         #region IQueryable, IOrderedQueryable  
@@ -83,57 +88,31 @@ namespace Framework.ObjectModule
 
         #endregion
 
-        #region IList
-
-        public int Count => throw new NotImplementedException();
-
-        public bool IsReadOnly => throw new NotImplementedException();
-
-        public T this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public int IndexOf(T item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Insert(int index, T item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveAt(int index)
-        {
-            throw new NotImplementedException();
-        }
+        #region 插入
 
         public void Add(T item)
         {
-            this._tempDatas.Add(item);
+            this._tempDatas_Insert.Add(item);
         }
 
-        public void Clear()
+        public void AddRange(List<T> items)
         {
-            throw new NotImplementedException();
-        }
-
-        public bool Contains(T item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Remove(T item)
-        {
-            throw new NotImplementedException();
+            this._tempDatas_Insert.AddRange(items);
         }
 
         #endregion
 
-        #region Public Method
+        #region 删除
+
+        //public void Remove(T item)
+        //{
+        //    this._tempDatas_Remove.Add(item);
+        //}
+
+        public void Remove(IQueryable<T> item)
+        {
+            this._tempDatas_Remove.Add(item);
+        }
 
         #endregion
     }

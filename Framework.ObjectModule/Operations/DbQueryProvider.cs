@@ -69,7 +69,7 @@ namespace Framework.ObjectModule
                 methodCall = method as MethodCallExpression;
             }
 
-            string sql = $"SELECT {selectResolver.SQL} FROM {typeof(T).Name} WHERE {whereResolver.SQL} {groupByResolver.SQL} {orderByResolver.SQL}";
+            string sql = $"SELECT {selectResolver.SQL} FROM {typeof(T).TableName()} WHERE {whereResolver.SQL} {groupByResolver.SQL} {orderByResolver.SQL}";
             var data = DatabaseOperator.ExecuteReader<T>(DatabaseOperator.connection, sql, whereResolver.SqlParameters);
 
             // 处理Select语句返回匿名对象

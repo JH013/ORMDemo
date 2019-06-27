@@ -13,13 +13,13 @@ namespace MyORM
         {
             //this.Students = new QuerySet<Student>();
             //this.Addresses = new QuerySet<Address>();
-            this.Students2 = new QuerySet<Student>();
+            this.Students2 = new QuerySet<Student22>();
         }
 
         //public QuerySet<Student> Students { get; set; }
 
         //public QuerySet<Address> Addresses { get; set; }
 
-        public QuerySet<Student> Students2 { get; set; }
+        public QuerySet<Student22> Students2 { get; set; }
     }
 }

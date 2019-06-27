@@ -21,11 +21,12 @@ namespace Framework.ObjectModule
             MethodCallExpression methodCall = expression as MethodCallExpression;
 
             string order = string.Empty;
-            if (string.Equals(methodCall.Method.Name, "OrderBy") || string.Equals(methodCall.Method.Name, "ThenBy"))
+            string columnName = methodCall.Method.ColumnName();
+            if (string.Equals(columnName, "OrderBy") || string.Equals(columnName, "ThenBy"))
             {
                 order = "ASC";
             }
-            else if (string.Equals(methodCall.Method.Name, "OrderByDescending") || string.Equals(methodCall.Method.Name, "ThenByDescending"))
+            else if (string.Equals(columnName, "OrderByDescending") || string.Equals(columnName, "ThenByDescending"))
             {
                 order = "DESC";
             }
@@ -43,7 +44,7 @@ namespace Framework.ObjectModule
 
             var lambda = methodCall.Arguments[1];
             var right = (lambda as UnaryExpression).Operand as LambdaExpression;
-            var member = (right.Body as MemberExpression).Member.Name;
+            var member = (right.Body as MemberExpression).Member.ColumnName();
             string column = $"[{member}]";
             if (!this._columns.Contains(column))
             {

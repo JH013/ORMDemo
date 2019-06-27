@@ -24,14 +24,7 @@ namespace Framework.ObjectModule
 
         private static int SingleInsert<T>(T data)
         {
-            Type type = typeof(T);
-            string tableName = type.Name;// 表名（默认取类名）
-            var tableAttr = type.GetCustomAttributes(typeof(TableAttribute), true).FirstOrDefault();
-            if (tableAttr != null)
-            {
-                tableName = (tableAttr as TableAttribute).TableName;
-            }
-
+            string tableName = typeof(T).TableName();// 表名（默认取类名）
             List<string> columnList = new List<string>();// 列名列表            
             List<SqlParameter> paramList = new List<SqlParameter>();// 参数列表
             FormatSqlParmeter<T>(data, ref columnList, ref paramList);
@@ -42,14 +35,8 @@ namespace Framework.ObjectModule
         private static int BatchInsert<T>(List<T> datas)
         {
             DataTable dt = new DataTable();
-
             Type type = typeof(T);
-            string tableName = type.Name;// 表名（默认取类名）
-            var tableAttr = type.GetCustomAttributes(typeof(TableAttribute), true).FirstOrDefault();
-            if (tableAttr != null)
-            {
-                tableName = (tableAttr as TableAttribute).TableName;
-            }
+            string tableName = type.TableName();// 表名（默认取类名）
 
             var tempMap = new Dictionary<string, string>();
 
@@ -57,8 +44,7 @@ namespace Framework.ObjectModule
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public).ToList();
             foreach (var p in properties)
             {
-                var columnAttr = p.Attr<ColumnAttribute>();
-                var columnName = columnAttr == null ? p.Name : columnAttr.ColumnName;
+                var columnName = p.ColumnName();
                 mappings.Add(columnName, columnName);
                 dt.Columns.Add(columnName, p.PropertyType);
                 tempMap.Add(p.Name, columnName);
@@ -83,8 +69,7 @@ namespace Framework.ObjectModule
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public).ToList();
             foreach (var p in properties)
             {
-                var columnAttr = p.Attr<ColumnAttribute>();
-                var columnName = columnAttr == null ? p.Name : columnAttr.ColumnName;
+                var columnName = p.ColumnName();
                 columns.Add(columnName);
 
                 SqlParameter parameter = new SqlParameter(columnName, p.GetValue(data) ?? DBNull.Value);
