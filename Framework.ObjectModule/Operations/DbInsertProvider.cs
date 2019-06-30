@@ -5,14 +5,12 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Framework.ObjectModule
 {
     public class DbInsertProvider
     {
-        public static int Insert<T>(List<T> datas)
+        public static int Execute<T>(List<T> datas)
         {
             if (datas.Count == 1)
             {
@@ -74,50 +72,7 @@ namespace Framework.ObjectModule
 
                 SqlParameter parameter = new SqlParameter(columnName, p.GetValue(data) ?? DBNull.Value);
                 var dataTypeAttr = p.Attr<DataTypeAttribute>();
-                if (dataTypeAttr != null)
-                {
-                    parameter.SqlDbType = dataTypeAttr.DbType;
-                }
-                else
-                {
-                    switch (p.PropertyType.FullName)
-                    {
-                        case "System.String":
-                            parameter.SqlDbType = SqlDbType.NChar;
-                            break;
-                        case "System.Byte":
-                            parameter.SqlDbType = SqlDbType.TinyInt;
-                            break;
-                        case "System.Int16":
-                            parameter.SqlDbType = SqlDbType.SmallInt;
-                            break;
-                        case "System.Int32":
-                            parameter.SqlDbType = SqlDbType.Int;
-                            break;
-                        case "System.Int64":
-                            parameter.SqlDbType = SqlDbType.BigInt;
-                            break;
-                        case "System.Single":
-                            parameter.SqlDbType = SqlDbType.Real;
-                            break;
-                        case "System.Double":
-                            parameter.SqlDbType = SqlDbType.Float;
-                            break;
-                        case "System.Boolean":
-                            parameter.SqlDbType = SqlDbType.Bit;
-                            break;
-                        case "System.DateTime":
-                            parameter.SqlDbType = SqlDbType.DateTime;
-                            break;
-                        case "System.Guid":
-                            parameter.SqlDbType = SqlDbType.UniqueIdentifier;
-                            break;
-                        case "System.Object":
-                            parameter.SqlDbType = SqlDbType.Variant;
-                            break;
-                    }
-                }
-
+                parameter.SqlDbType = dataTypeAttr != null ? dataTypeAttr.DbType : Util.GetSqlDataType(p);
                 var stringLengthAttr = p.Attr<StringLengthAttribute>();
                 if (stringLengthAttr != null)
                 {

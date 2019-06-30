@@ -9,7 +9,7 @@ namespace Framework.ObjectModule
 {
     public class DbDeleteProvider
     {
-        public static int Delete<T>(List<IQueryable<T>> queryables)
+        public static int Execute<T>(List<IQueryable<T>> queryables)
         {
             foreach (var queryable in queryables)
             {

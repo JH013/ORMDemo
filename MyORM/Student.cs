@@ -9,6 +9,7 @@ namespace MyORM
         [Column("Id")]
         [StringLength(128)]
         [DataType(SqlDbType.NChar)]
+        [PrimaryKey]
         public string Id { get; set; }
 
         [Column("Name")]

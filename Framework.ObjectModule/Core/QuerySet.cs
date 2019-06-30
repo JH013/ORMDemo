@@ -18,6 +18,7 @@ namespace Framework.ObjectModule
 
             this._tempDatas_Insert = new List<T>();
             this._tempDatas_Remove = new List<IQueryable<T>>();
+            this._tempDatas_Update = new List<TempEntry<T>>();
             this._realType = typeof(T);
         }
 
@@ -28,6 +29,7 @@ namespace Framework.ObjectModule
 
             this._tempDatas_Insert = new List<T>();
             this._tempDatas_Remove = new List<IQueryable<T>>();
+            this._tempDatas_Update = new List<TempEntry<T>>();
             this._realType = typeof(T);
         }
 
@@ -44,6 +46,8 @@ namespace Framework.ObjectModule
 
         // 临时数据，删除操作使用
         private List<IQueryable<T>> _tempDatas_Remove;
+
+        private List<TempEntry<T>> _tempDatas_Update;
 
         // 真实数据类型，插入、删除操作使用
         private Type _realType;
@@ -112,6 +116,18 @@ namespace Framework.ObjectModule
         public void Remove(IQueryable<T> item)
         {
             this._tempDatas_Remove.Add(item);
+        }
+
+        #endregion
+
+        #region 更新
+
+        public TempEntry<T> UpdateEntry(T item)
+        {
+            var en = new TempEntry<T>();
+            en.Attach(item);
+            this._tempDatas_Update.Add(en);
+            return en;
         }
 
         #endregion
