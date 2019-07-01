@@ -130,6 +130,13 @@ namespace Framework.ObjectModule
             return en;
         }
 
+        public void UpdateByPrimary(T item)
+        {
+            var en = new TempEntry<T>();
+            en.Attach(item, true);
+            this._tempDatas_Update.Add(en);
+        }
+
         #endregion
     }
 }

@@ -10,9 +10,9 @@ namespace MyORM
     {
         static void Main(string[] args)
         {
-            //Query();
+            Query();
 
-            Insert();
+            //Insert();
         }
 
         private static void Query()
@@ -21,18 +21,20 @@ namespace MyORM
             {
                 var data = context.Students2;
 
+                var lst = new List<string> { "name12", "name21" };
+                var result15 = data.Where(a => lst.Contains(a.Name)).Where(b => b.Age1 > 12 && b.Age1 < 1200).ToList();
 
                 //var result5 = data.Select(c => c).ToList();
 
-                var result1 = data.Select(b => new { Name = b.Name, Age12 = b.Age1 }).ToList();
+                //var result1 = data.Select(b => new { Name = b.Name, Age12 = b.Age1 }).ToList();
 
-                var result13 = data.Select(b => b.Name).ToList();
+                //var result13 = data.Select(b => b.Name).ToList();
 
                 //var result2 = data.Select(b => new Student { Name = b.Name, Age = b.Age }).ToList();
 
-                var result3 = data.OrderBy(b => b.Name).ThenBy(b => b.Age1).ToList();
+                //var result3 = data.OrderBy(b => b.Name).ThenBy(b => b.Age1).ToList();
 
-                var result4 = data.GroupBy(a => new { Age12 = a.Age1 }).SelectMany(group => group).Select(c => c.Age1).ToList();
+                //var result4 = data.GroupBy(a => new { Age12 = a.Age1 }).SelectMany(group => group).Select(c => c.Age1).ToList();
 
                 //var result52 = data.GroupBy(a => new { Age2 = a.Age, Name2 = a.Name }).SelectMany(group => group).Select(b => new { Name = b.Name, Age = b.Age }).ToList();
 
@@ -44,7 +46,7 @@ namespace MyORM
 
                 //var result143 = data.Where(a => a.Name == "name2" && a.Age >= 3).Select(b => new Student { Name = b.Name, Age = b.Age }).OrderBy(a => a.Age).ToList();
 
-                //var result = data.Where(a => a.Name == "name2").Where(b => b.Age >= 3).Where(c => c.Id == "2").ToList();
+                var result = data.Where(a => a.Name == "name12").Where(b => b.Age1 >= 12).ToList();
 
                 //var result43 = data.Where(a => a.Name == "name2").Where(b => b.Age >= 3 && b.Id == "2").ToList();
             }
@@ -63,9 +65,10 @@ namespace MyORM
 
                 //context.Students2.UpdateEntry(new Student22 { Id = "123" }).Attach(a => a.Age1 == 0);
 
-                var updateData = new Student22 { Id = Guid.NewGuid().ToString(), Name = "name122", Age1 = 22223 };
+                var updateData = new Student22 { Id = "235092f4-e363-4497-ae8b-0b159ffa7638", Name = "name1222222", Age1 = 1234 };
                 //context.Students2.UpdateEntry(updateData).Modified(a => a.Age1).Condition(a => a.Name == "name122" && a.Id == "9321e81a-6357-4a51-81fc-8e529a7c2c1d");
-                context.Students2.UpdateEntry(updateData).Modified(a => a.Id).Condition(a => string.Equals(a.Name, "name122"));
+                //context.Students2.UpdateEntry(updateData).Modified(a => a.Id).Condition(a => string.Equals(a.Name, "name122"));
+                context.Students2.UpdateByPrimary(updateData);
 
                 var ret = context.Merge();
             }

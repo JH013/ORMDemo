@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Framework.ObjectModule
 {
@@ -12,17 +11,13 @@ namespace Framework.ObjectModule
     {
         public WhereExpressionResolver() : base()
         {
-            this._paramDic = new Dictionary<string, object>();
             this._suffix = 0;
-            this._paramArray = this._paramDic.Select(p => new SqlParameter(p.Key, p.Value)).ToArray();
+            this._paramList = new List<SqlParameter>();
         }
 
-        private const string FN_TEMPLATE = "({0} {1} {2})";
-
         protected Expression _expression;
-        private Dictionary<string, object> _paramDic;
         private int _suffix;
-        private SqlParameter[] _paramArray;
+        private List<SqlParameter> _paramList;
 
         public new string SQL
         {
@@ -36,12 +31,7 @@ namespace Framework.ObjectModule
         {
             get
             {
-                if (!this._paramArray.Any())
-                {
-                    this._paramArray = this._paramDic.Select(p => new SqlParameter(p.Key, p.Value)).ToArray();
-                }
-
-                return this._paramArray;
+                return this._paramList.ToArray();
             }
         }
 
@@ -60,7 +50,7 @@ namespace Framework.ObjectModule
             }
         }
 
-        #region Private
+        #region 私有方法
 
         private string GetSQL(Expression expression)
         {
@@ -81,19 +71,38 @@ namespace Framework.ObjectModule
                 BinaryExpression binary = expression as BinaryExpression;
                 if (binary.Left is MemberExpression)
                 {
-                    return this.ResolveToFunc(binary);
+                    return this.ResolveBinaryExToSQL(binary);
                 }
+            }
+
+            if (expression is MethodCallExpression)
+            {
+                var meCall = expression as MethodCallExpression;
+                return this.ResolveMethodCallExToSQL(meCall);
             }
 
             var body = expression as BinaryExpression;
             var left = this.GetSQL(body.Left);
             var right = this.GetSQL(body.Right);
-            var oper = GetOperator(body.NodeType);
+            var oper = GetBinaryOperator(body.NodeType);
 
-            return string.Format(FN_TEMPLATE, left, oper, right);
+            return $"({left} {oper} {right})";
         }
 
-        private object GetValue(Expression expression)
+        #region 解析二元表达式
+
+        private string ResolveBinaryExToSQL(BinaryExpression expression)
+        {
+            var memberInfo = (expression.Left as MemberExpression).Member;
+            string key = memberInfo.ColumnName();
+            string oper = this.GetBinaryOperator(expression.NodeType);
+            object value = this.GetBinaryValue(expression.Right);
+            SqlParameter parameter = this.FormatSqlParameter(memberInfo, value);
+            this._paramList.Add(parameter);
+            return $"({key} {oper} @{parameter.ParameterName})";
+        }
+
+        private object GetBinaryValue(Expression expression)
         {
             if (expression is ConstantExpression)
             {
@@ -121,32 +130,7 @@ namespace Framework.ObjectModule
             throw new Exception("The expression value can not be resolved." + expression);
         }
 
-        private string ResolveToFunc(BinaryExpression expression)
-        {
-            string key = (expression.Left as MemberExpression).Member.ColumnName();
-            string oper = this.GetOperator(expression.NodeType);
-            object value = this.GetValue(expression.Right);
-            var param = this.GetParamName(key, value);
-            string result = string.Format(FN_TEMPLATE, key, oper, param);
-            return result;
-        }
-
-        private string GetParamName(string param, object value)
-        {
-            param = "@" + param;
-
-            while (this._paramDic.ContainsKey(param))
-            {
-                param = param + this._suffix;
-                this._suffix++;
-            }
-
-            this._paramDic[param] = value;
-
-            return param;
-        }
-
-        private string GetOperator(ExpressionType expressiontype)
+        private string GetBinaryOperator(ExpressionType expressiontype)
         {
             switch (expressiontype)
             {
@@ -173,6 +157,59 @@ namespace Framework.ObjectModule
                 default:
                     throw new Exception(string.Format("Not support {0} operator." + expressiontype));
             }
+        }
+
+        #endregion
+
+        #region 解析方法调用表达式
+
+        private string ResolveMethodCallExToSQL(MethodCallExpression expression)
+        {
+            switch (expression.Method.Name.ToLower())
+            {
+                case "contains":
+                    var memberExpression = expression.Object as MemberExpression;
+                    var fieldInfo = memberExpression.Member as FieldInfo;
+                    var fieldValue = fieldInfo.GetValue((memberExpression.Expression as ConstantExpression).Value);
+                    dynamic tempValue = fieldValue;
+                    List<dynamic> tempValues = new List<dynamic>();
+                    foreach (var key in tempValue)
+                    {
+                        tempValues.Add(key);
+                    }
+
+                    var column = expression.Arguments[0] as MemberExpression;
+                    List<SqlParameter> parameters = new List<SqlParameter>();
+                    for (int i = 0; i < tempValues.Count; i++)
+                    {
+                        var parameter = this.FormatSqlParameter(column.Member, tempValues[i]);
+                        parameters.Add(parameter);
+                    }
+
+                    var sql = $"[{column.Member.ColumnName()}] IN ({string.Join(",", parameters.Select(p => $"@{p.ParameterName}"))})";
+                    this._paramList.AddRange(parameters);
+                    return sql;
+            }
+
+            return string.Empty;
+        }
+
+        #endregion
+
+        private SqlParameter FormatSqlParameter(MemberInfo memberInfo, object memberValue)
+        {            
+            var paramName = $"{memberInfo.Name}_p_{this._suffix}";
+            SqlParameter parameter = new SqlParameter(paramName, memberValue);
+            var dataTypeAttr = memberInfo.Attr<DataTypeAttribute>();
+            parameter.SqlDbType = dataTypeAttr != null ? dataTypeAttr.DbType : Util.GetSqlDataType(memberInfo);
+            var stringLengthAttr = memberInfo.Attr<StringLengthAttribute>();
+            if (stringLengthAttr != null)
+            {
+                parameter.Size = stringLengthAttr.Length;
+            }
+
+            this._suffix++;
+            return parameter;
         }
 
         #endregion

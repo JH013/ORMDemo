@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Linq.Expressions;
@@ -77,6 +78,37 @@ namespace Framework.ObjectModule
         public static SqlDbType GetSqlDataType(PropertyInfo property)
         {
             switch (property.PropertyType.FullName)
+            {
+                case "System.String":
+                    return SqlDbType.NChar;
+                case "System.Byte":
+                    return SqlDbType.TinyInt;
+                case "System.Int16":
+                    return SqlDbType.SmallInt;
+                case "System.Int32":
+                    return SqlDbType.Int;
+                case "System.Int64":
+                    return SqlDbType.BigInt;
+                case "System.Single":
+                    return SqlDbType.Real;
+                case "System.Double":
+                    return SqlDbType.Float;
+                case "System.Boolean":
+                    return SqlDbType.Bit;
+                case "System.DateTime":
+                    return SqlDbType.DateTime;
+                case "System.Guid":
+                    return SqlDbType.UniqueIdentifier;
+                case "System.Object":
+                    return SqlDbType.Variant;
+                default:
+                    return SqlDbType.NChar;
+            }
+        }
+
+        public static SqlDbType GetSqlDataType(MemberInfo member)
+        {
+            switch (member.ReflectedType.FullName)
             {
                 case "System.String":
                     return SqlDbType.NChar;

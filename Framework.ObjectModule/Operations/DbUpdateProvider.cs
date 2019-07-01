@@ -14,29 +14,74 @@ namespace Framework.ObjectModule
     {
         public static int Execute<T>(List<TempEntry<T>> entries)
         {
-            string paramPrefix = "p_";
+            int affectLines = 0;
             foreach (var entry in entries)
             {
-                List<string> properties = entry.ModifiedProperties.Any() ? entry.ModifiedProperties : typeof(T).GetProperties().Select(p => p.Name).ToList();
-                if (properties == null || !properties.Any())
+                if (entry.UpdateByPrimaryKey)
                 {
-                    throw new Exception("No update fields.");
+                    affectLines += UpdateByPrimaryKey(entry);
                 }
-
-                List<string> columnList = new List<string>();
-                List<SqlParameter> paramList = new List<SqlParameter>();
-                FormatSqlParmeter<T>(entry.Data, entry.ModifiedProperties, ref columnList, ref paramList, paramPrefix);
-
-                // Where表达式解析器
-                WhereExpressionResolver<T> whereResolver = new WhereExpressionResolver<T>();
-                whereResolver.Resolve(entry.UpdateCondition as LambdaExpression);
-
-                string sql = $"UPDATE {typeof(T).TableName()} SET {string.Join(",", columnList.Select(c => $"{c} = @{paramPrefix}{c}"))} WHERE {whereResolver.SQL}";
-                var parameters = paramList.Concat(whereResolver.SqlParameters.ToList());
-                return DatabaseOperator.ExecuteNonQuery(DatabaseOperator.connection, sql, parameters.ToArray());
+                else
+                {
+                    affectLines += UpdateByExpression(entry);
+                }
             }
 
-            return 0;
+            return affectLines;
+        }
+
+        private static int UpdateByPrimaryKey<T>(TempEntry<T> entry)
+        {
+            var primaryKeyProp = entry.Data.PrimaryKey();
+            if (primaryKeyProp == null)
+            {
+                throw new Exception("No primary key.");
+            }
+
+            List<string> properties = typeof(T).GetProperties().Where(p => !string.Equals(p.Name, primaryKeyProp.Name)).Select(p => p.Name).ToList();
+            if (properties == null || !properties.Any())
+            {
+                throw new Exception("No update fields.");
+            }
+
+            List<string> columnList = new List<string>();
+            List<SqlParameter> paramList = new List<SqlParameter>();
+            FormatSqlParmeter<T>(entry.Data, properties, ref columnList, ref paramList, "");
+            string primaryKeyColumn = primaryKeyProp.ColumnName();
+            string sql = $"UPDATE {typeof(T).TableName()} SET {string.Join(",", columnList.Select(c => $"{c} = @{c}"))} WHERE {primaryKeyColumn} = @{primaryKeyColumn}";
+            SqlParameter parameter = new SqlParameter($"{primaryKeyColumn}", primaryKeyProp.GetValue(entry.Data) ?? DBNull.Value);
+            var dataTypeAttr = primaryKeyProp.Attr<DataTypeAttribute>();
+            parameter.SqlDbType = dataTypeAttr != null ? dataTypeAttr.DbType : Util.GetSqlDataType(primaryKeyProp);
+            var stringLengthAttr = primaryKeyProp.Attr<StringLengthAttribute>();
+            if (stringLengthAttr != null)
+            {
+                parameter.Size = stringLengthAttr.Length;
+            }
+
+            paramList.Add(parameter);
+            return DatabaseOperator.ExecuteNonQuery(DatabaseOperator.connection, sql, paramList.ToArray());
+        }
+
+        private static int UpdateByExpression<T>(TempEntry<T> entry)
+        {
+            string paramPrefix = "p_";
+            List<string> properties = entry.ModifiedProperties.Any() ? entry.ModifiedProperties : typeof(T).GetProperties().Select(p => p.Name).ToList();
+            if (properties == null || !properties.Any())
+            {
+                throw new Exception("No update fields.");
+            }
+
+            List<string> columnList = new List<string>();
+            List<SqlParameter> paramList = new List<SqlParameter>();
+            FormatSqlParmeter<T>(entry.Data, properties, ref columnList, ref paramList, paramPrefix);
+
+            // Where表达式解析器
+            WhereExpressionResolver<T> whereResolver = new WhereExpressionResolver<T>();
+            whereResolver.Resolve(entry.UpdateCondition as LambdaExpression);
+
+            string sql = $"UPDATE {typeof(T).TableName()} SET {string.Join(",", columnList.Select(c => $"{c} = @{paramPrefix}{c}"))} WHERE {whereResolver.SQL}";
+            var parameters = paramList.Concat(whereResolver.SqlParameters.ToList());
+            return DatabaseOperator.ExecuteNonQuery(DatabaseOperator.connection, sql, parameters.ToArray());
         }
 
         private static void FormatSqlParmeter<T>(T data, List<string> modified, ref List<string> columns, ref List<SqlParameter> parameters, string paramPrefix)

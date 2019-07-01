@@ -44,5 +44,19 @@ namespace Framework.ObjectModule
             var attr = memberInfo.Attr<TableAttribute>();
             return attr == null ? memberInfo.Name : attr.TableName;
         }
+
+        public static PropertyInfo PrimaryKey(this object obj)
+        {
+            var properties = obj.GetType().GetProperties();
+            foreach(var property in properties)
+            {
+                if (property.Attr<PrimaryKeyAttribute>() != null)
+                {
+                    return property;
+                }
+            }
+
+            return null;
+        }
     }
 }

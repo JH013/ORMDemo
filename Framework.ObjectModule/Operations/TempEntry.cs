@@ -20,6 +20,7 @@ namespace Framework.ObjectModule
         private T _data;
         private List<string> _modifiedProperties;
         private Expression<Func<T, bool>> _updateCondition;
+        private bool _updateByPrimaryKey;
 
         #endregion
 
@@ -31,11 +32,14 @@ namespace Framework.ObjectModule
 
         public Expression<Func<T, bool>> UpdateCondition { get { return this._updateCondition; } }
 
+        public bool UpdateByPrimaryKey { get { return this._updateByPrimaryKey; } }
+
         #endregion
 
-        public TempEntry<T> Attach(T data)
+        public TempEntry<T> Attach(T data, bool byPrimaryKey = false)
         {
             this._data = data;
+            this._updateByPrimaryKey = byPrimaryKey;
             return this;
         }
 
