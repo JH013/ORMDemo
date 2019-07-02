@@ -66,6 +66,7 @@
     <Compile Include="Core\Attributes\TableAttribute.cs" />
     <Compile Include="DbOperate\DatabaseOperator.cs" />
     <Compile Include="Core\DbContextBase.cs" />
+    <Compile Include="ExpressionResolver\ExpressionResolverManager.cs" />
     <Compile Include="Operations\DbDeleteProvider.cs" />
     <Compile Include="Operations\DbInsertProvider.cs" />
     <Compile Include="ExpressionResolver\BaseExpressionResolver.cs" />

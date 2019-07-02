@@ -8,7 +8,6 @@ namespace Framework.ObjectModule
 {
     public partial class QuerySet<T> : IQueryable<T>, IOrderedQueryable<T>
     {
-
         #region 构造方法
 
         public QuerySet()
@@ -136,6 +135,18 @@ namespace Framework.ObjectModule
             en.Attach(item, true);
             this._tempDatas_Update.Add(en);
         }
+
+        #endregion
+
+        #region 其他
+
+        //public T First(Expression<Func<T, bool>> predicate)
+        //{
+        //    return default(T);
+        //}
+
+        //public T 
+        //public 
 
         #endregion
     }

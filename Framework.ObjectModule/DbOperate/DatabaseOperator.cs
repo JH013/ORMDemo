@@ -57,13 +57,14 @@ namespace Framework.ObjectModule
             }
         }
 
-        public static object ExecuteScalar(string connectionStr, string sqlText)
+        public static object ExecuteScalar(string connectionStr, string sqlText, SqlParameter[] parameters)
         {
             using (SqlConnection conn = new SqlConnection(connectionStr))
             {
                 conn.Open();
                 using (SqlCommand command = new SqlCommand(sqlText, conn))
                 {
+                    command.Parameters.AddRange(parameters);
                     return command.ExecuteScalar();
                 }
             }

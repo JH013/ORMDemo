@@ -21,8 +21,23 @@ namespace MyORM
             {
                 var data = context.Students2;
 
-                var lst = new List<string> { "name12", "name21" };
-                var result15 = data.Where(a => lst.Contains(a.Name)).Where(b => b.Age1 > 12 && b.Age1 < 1200).ToList();
+                //var result = data.Where(a => a.Name == "name12").OrderByDescending(a => a.Age1).First(a => a.Age1 == 12);
+
+                //var result = data.First(a => a.Name == "name12");
+
+                //var result2 = data.First(a => a.Age1 == 12);
+
+                //var result23 = data.Where(a => a.Name == "name12").First();
+
+                var result111 = data.Count(d => d.Age1 == 12);
+                var result222 = data.Where(a => a.Name == "name12").Count();
+                var result333 = data.Where(a => a.Name == "name12").Count(d => d.Age1 == 12);
+
+
+                //var result2 = data.Where(a => a.Name == "name12").Count();
+
+                //var lst = new List<string> { "name12", "name21" };
+                //var result152 = data.Where(a => lst.Contains(a.Name)).Where(b => b.Age1 > 12 && b.Age1 < 1200).ToList();
 
                 //var result5 = data.Select(c => c).ToList();
 
@@ -40,13 +55,13 @@ namespace MyORM
 
                 //var result15 = data.Where(a => a.Name == "name2").ToList();
 
-                //var result23 = data.OrderBy(a => a.Age).ThenBy(a => a.Name).ToList();
+                //var result23 = data.OrderBy(a => a.Age1).ThenBy(a => a.Name).ToList();
 
-                //var result32 = data.OrderByDescending(a => a.Age).Where(a => a.Name == "name2" && a.Age >= 3).ToList();
+                //var result32 = data.OrderByDescending(a => a.Age1).Where(a => a.Name == "name2" && a.Age1 >= 3).ToList();
 
-                //var result143 = data.Where(a => a.Name == "name2" && a.Age >= 3).Select(b => new Student { Name = b.Name, Age = b.Age }).OrderBy(a => a.Age).ToList();
+                //var result143 = data.Where(a => a.Name == "name2" && a.Age1 >= 3).Select(b => new Student22 { Name = b.Name, Age1 = b.Age1 }).OrderBy(a => a.Age1).ToList();
 
-                var result = data.Where(a => a.Name == "name12").Where(b => b.Age1 >= 12).ToList();
+                //var result = data.Where(a => a.Name == "name12").Where(b => b.Age1 >= 12).ToList();
 
                 //var result43 = data.Where(a => a.Name == "name2").Where(b => b.Age >= 3 && b.Id == "2").ToList();
             }
