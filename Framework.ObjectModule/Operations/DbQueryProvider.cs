@@ -30,17 +30,24 @@ namespace Framework.ObjectModule
         public TResult Execute<TResult>(Expression expression)
         {
             MethodCallExpression methodCall = expression as MethodCallExpression;
-            if (string.Equals(methodCall.Method.Name, "First", StringComparison.OrdinalIgnoreCase))
+            if (methodCall == null && expression is ConstantExpression)
             {
-                return this.ExecuteFirst<TResult>(methodCall);
+                return this.ExecuteNoneFunc<TResult>();
             }
-            else if (string.Equals(methodCall.Method.Name, "Count", StringComparison.OrdinalIgnoreCase))
+
+            switch (methodCall.Method.Name)
             {
-                return this.ExecuteCount<TResult>(methodCall);
-            }
-            else
-            {
-                return this.ExecuteCoreQuery<TResult>(methodCall);
+                case "First":
+                    return this.ExecuteFirstFunc<TResult>(methodCall);
+                case "Count":
+                    return this.ExecuteCountFunc<TResult>(methodCall);
+                case "Any":
+                    var count = this.ExecuteCountFunc<int>(methodCall);
+                    return (TResult)(object)(count > 0);
+                case "All":
+                    return this.ExecuteAllFunc<TResult>(methodCall);
+                default:
+                    return this.ExecuteCoreQuery<TResult>(methodCall);
             }
         }
 
@@ -48,7 +55,15 @@ namespace Framework.ObjectModule
 
         #region 私有方法
 
-        private TResult ExecuteFirst<TResult>(MethodCallExpression methodCall)
+        private TResult ExecuteNoneFunc<TResult>()
+        {
+            SelectExpressionResolver<T> selectResolver = new SelectExpressionResolver<T>();
+            string sql = $"SELECT {selectResolver.SQL} FROM {typeof(T).TableName()}";
+            var data = DatabaseOperator.ExecuteReader<T>(DatabaseOperator.connection, sql);
+            return (TResult)(object)data;
+        }
+
+        private TResult ExecuteFirstFunc<TResult>(MethodCallExpression methodCall)
         {
             List<T> data = null;
             if (methodCall.Arguments.Count == 2)
@@ -82,7 +97,7 @@ namespace Framework.ObjectModule
             return (TResult)(object)ret;
         }
 
-        private TResult ExecuteCount<TResult>(MethodCallExpression methodCall)
+        private TResult ExecuteCountFunc<TResult>(MethodCallExpression methodCall)
         {
             int count = 0;
             if (methodCall.Arguments.Count == 2)
@@ -114,10 +129,57 @@ namespace Framework.ObjectModule
             return (TResult)(object)count;
         }
 
+        private TResult ExecuteAllFunc<TResult>(MethodCallExpression methodCall)
+        {
+            int countOrigin = 0;
+            int countAll = 0;
+            var lambda = (methodCall.Arguments[1] as UnaryExpression).Operand as LambdaExpression;
+            WhereExpressionResolver<T> whereResolver = new WhereExpressionResolver<T>();
+            whereResolver.Resolve(lambda);
+
+            if (methodCall.Arguments[0] is MethodCallExpression)
+            {
+                ExpressionResolverManager<T> manager = new ExpressionResolverManager<T>(methodCall.Arguments[0] as MethodCallExpression).Resolve();
+                var sqlAll = $"SELECT Count(*) FROM {typeof(T).TableName()} WHERE {$"{whereResolver.SQL} AND {manager.WhereResolver.SQL}"} {manager.GroupByResolver.SQL} {manager.OrderByResolver.SQL}";
+                var parameters = whereResolver.SqlParameters.Concat(manager.WhereResolver.SqlParameters);
+                countAll = (int)DatabaseOperator.ExecuteScalar(DatabaseOperator.connection, sqlAll, parameters.ToArray());
+
+                var sqlOrigin = $"SELECT Count(*) FROM {typeof(T).TableName()} WHERE {manager.WhereResolver.SQL} {manager.GroupByResolver.SQL} {manager.OrderByResolver.SQL}";
+                countOrigin = (int)DatabaseOperator.ExecuteScalar(DatabaseOperator.connection, sqlOrigin, manager.WhereResolver.SqlParameters);
+            }
+            else if (methodCall.Arguments[0] is ConstantExpression)
+            {
+                var sqlAll = $"SELECT Count(*) FROM {typeof(T).TableName()} WHERE {whereResolver.SQL}";
+                countAll = (int)DatabaseOperator.ExecuteScalar(DatabaseOperator.connection, sqlAll, whereResolver.SqlParameters);
+
+                var sqlOrigin = $"SELECT Count(*) FROM {typeof(T).TableName()}";
+                countOrigin = (int)DatabaseOperator.ExecuteScalar(DatabaseOperator.connection, sqlOrigin, whereResolver.SqlParameters);
+            }
+
+            return (TResult)(object)(countAll == countOrigin);
+        }
+
         private TResult ExecuteCoreQuery<TResult>(MethodCallExpression methodCall)
         {
+            string sql = string.Empty;
             var manager = new ExpressionResolverManager<T>(methodCall).Resolve();
-            string sql = $"SELECT {manager.SelectResolver.SQL} FROM {typeof(T).TableName()} WHERE {manager.WhereResolver.SQL} {manager.GroupByResolver.SQL} {manager.OrderByResolver.SQL}";
+            if (manager.SkipResolver.Skip > 0 && manager.TakeResolver.Take > 0)
+            {
+                sql = $"SELECT {manager.SelectResolver.SQL} FROM {typeof(T).TableName()} WHERE {manager.WhereResolver.SQL} {manager.GroupByResolver.SQL} {manager.OrderByResolver.SQL} OFFSET {manager.SkipResolver.Skip} ROWS FETCH NEXT {manager.TakeResolver.Take} ROWS ONLY";
+            }
+            else if (manager.SkipResolver.Skip > 0 && manager.TakeResolver.Take == 0)
+            {
+                sql = $"SELECT {manager.SelectResolver.SQL} FROM {typeof(T).TableName()} WHERE {manager.WhereResolver.SQL} {manager.GroupByResolver.SQL} {manager.OrderByResolver.SQL} {manager.SkipResolver.SQL}";
+            }
+            else if (manager.SkipResolver.Skip == 0 && manager.TakeResolver.Take > 0)
+            {
+                sql = $"SELECT {manager.TakeResolver.SQL} {manager.SelectResolver.SQL} FROM {typeof(T).TableName()} WHERE {manager.WhereResolver.SQL} {manager.GroupByResolver.SQL} {manager.OrderByResolver.SQL}";
+            }
+            else
+            {
+                sql = $"SELECT {manager.SelectResolver.SQL} FROM {typeof(T).TableName()} WHERE {manager.WhereResolver.SQL} {manager.GroupByResolver.SQL} {manager.OrderByResolver.SQL}";
+            }
+
             var data = DatabaseOperator.ExecuteReader<T>(DatabaseOperator.connection, sql, manager.WhereResolver.SqlParameters);
 
             // 处理Select语句返回匿名对象

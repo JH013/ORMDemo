@@ -13,17 +13,24 @@ namespace Framework.ObjectModule
         {
             this._suffix = 0;
             this._paramList = new List<SqlParameter>();
+            this._sql = string.Empty;
         }
 
         protected Expression _expression;
         private int _suffix;
         private List<SqlParameter> _paramList;
+        private string _sql;
 
         public new string SQL
         {
             get
             {
-                return this.GetSQL(this._expression);
+                if (string.IsNullOrEmpty(this._sql))
+                {
+                    this._sql = this.GetSQL(this._expression);
+                }
+
+                return this._sql;
             }
         }
 

@@ -21,7 +21,9 @@ namespace Framework.ObjectModule
                 using (SqlCommand command = new SqlCommand(sqlText, conn))
                 {
                     command.Parameters.AddRange(parameters);
-                    return command.ExecuteNonQuery();
+                    var result = command.ExecuteNonQuery();
+                    command.Parameters.Clear();
+                    return result;
                 }
             }
         }
@@ -35,7 +37,9 @@ namespace Framework.ObjectModule
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        return DataReaderToList<T>(reader);
+                        var result = DataReaderToList<T>(reader);
+                        command.Parameters.Clear();
+                        return result;
                     }
                 }
             }
@@ -51,7 +55,9 @@ namespace Framework.ObjectModule
                     command.Parameters.AddRange(parameters);
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        return DataReaderToList<T>(reader);
+                        var result = DataReaderToList<T>(reader);
+                        command.Parameters.Clear();
+                        return result;
                     }
                 }
             }
@@ -65,7 +71,9 @@ namespace Framework.ObjectModule
                 using (SqlCommand command = new SqlCommand(sqlText, conn))
                 {
                     command.Parameters.AddRange(parameters);
-                    return command.ExecuteScalar();
+                    var result = command.ExecuteScalar();
+                    command.Parameters.Clear();
+                    return result;
                 }
             }
         }

@@ -29,11 +29,23 @@ namespace MyORM
 
                 //var result23 = data.Where(a => a.Name == "name12").First();
 
-                var result111 = data.Count(d => d.Age1 == 12);
-                var result222 = data.Where(a => a.Name == "name12").Count();
-                var result333 = data.Where(a => a.Name == "name12").Count(d => d.Age1 == 12);
+                //var result111 = data.Count(d => d.Age1 == 12);
+                //var result222 = data.Where(a => a.Name == "name12").Count();
+                //var result333 = data.Where(a => a.Name == "name12").Count(d => d.Age1 == 12);
 
 
+                //var result = data.OrderByDescending(a => a.Age1).Skip(4 * 1).Take(4).ToList();
+                //var result = data.OrderByDescending(a => a.Age1).Skip(4 * 1).ToList();
+                //var result1 = data.OrderByDescending(a => a.Age1).Take(4).ToList();
+                //var result2 = data.OrderByDescending(a => a.Age1).Skip(4 * 1).Take(4).ToList();
+                //var result3 = data.OrderByDescending(a => a.Age1).ToList();
+                //var result = data.Any(d => d.Age1 == 1);
+                //var result = data.All(d => d.Age1 == 12);
+                //var result1 = data.Where(d => d.Name == "name12").All(d => d.Age1 == 12);
+                //var result2 = data.All(d => d.Age1 > 0);
+                var result2 = data.ToList();
+
+                //var result2 = data.All(d => d.Age1 == 11);
                 //var result2 = data.Where(a => a.Name == "name12").Count();
 
                 //var lst = new List<string> { "name12", "name21" };
