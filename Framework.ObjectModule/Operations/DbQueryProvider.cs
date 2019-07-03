@@ -42,8 +42,7 @@ namespace Framework.ObjectModule
                 case "Count":
                     return this.ExecuteCountFunc<TResult>(methodCall);
                 case "Any":
-                    var count = this.ExecuteCountFunc<int>(methodCall);
-                    return (TResult)(object)(count > 0);
+                    return (TResult)(object)(this.ExecuteCountFunc<int>(methodCall) > 0);
                 case "All":
                     return this.ExecuteAllFunc<TResult>(methodCall);
                 default:
